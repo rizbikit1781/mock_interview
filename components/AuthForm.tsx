@@ -18,18 +18,35 @@ import {
   FormMessage,
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
+import Link from 'next/link'
+import { toast } from 'sonner'
 
 
-const formSchema = z.object({
-  username: z.string().min(2).max(50),
-})
+// const formSchema = z.object({
+//   username: z.string().min(2).max(50),
+// })
+
+
+const authFormSchema = (type : FormType) => {
+  return z.object({
+    name: type === 'sign-up' ? z.string().min(3) : z.string().optional(),
+    email: z.string().email(),
+    password: z.string().min(3),
+  })
+
+}
+
 
 const AuthForm = ({ type } : { type : FormType }) => {
+ 
+    const formSchema = authFormSchema(type);
 
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
-        username: "",
+        name: "",
+        email: "",
+        password: "",
         },
     })
     
@@ -37,7 +54,15 @@ const AuthForm = ({ type } : { type : FormType }) => {
     function onSubmit(values: z.infer<typeof formSchema>) {
         // Do something with the form values.
         // ✅ This will be type-safe and validated.
-        console.log(values)
+
+        try {
+          
+        } catch (error) {
+          console.log(error)
+          toast.error(`There was an error`)
+          
+        }
+
     }
 
 
@@ -45,19 +70,30 @@ const AuthForm = ({ type } : { type : FormType }) => {
 
   return (
     <div className='card-border lg:min-w-[566px]'>
-    <div className='flex flex-col gap-6 card py-14 px-10'>
-        <div className='flex flex-row gap-2 justify-center'>
-            <Image src="/logo.svg" alt="logo" height={32} width={38}/>
-            <h2 className='text-primary-100'>PrepWise</h2>
-        </div>
-        <h3>Practice job interview with AI</h3>
-            <Form {...form}>
-                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 w-full mt-4 form">
-                    {!isSignIn && <p>Name</p>}
-                    <Formfield form={form}/>
-                    <Button type="submit">Submit</Button>
-                </form>
-            </Form>
+      <div className='flex flex-col gap-6 card py-14 px-10'>
+          <div className='flex flex-row gap-2 justify-center'>
+              <Image src="/logo.svg" alt="logo" height={32} width={38}/>
+              <h2 className='text-primary-100'>PrepWise</h2>
+          </div>
+          <h3>Practice job interview with AI</h3>
+              <Form {...form}>
+                  <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 w-full mt-4 form">
+                      {!isSignIn && <p>Name</p>}
+                      <p>Email</p>
+                      <p>Password</p>
+
+                      {/* <Formfield form={form} /> */}
+                      <Button className="btn" type="submit">{!isSignIn ? 'Sign-In' : 'Create an Account'}</Button>
+                  </form>
+              </Form>
+
+              <p className='text-center'>
+                {isSignIn ? 'No account yet?' : 'Have an account already?'}
+                <Link href={!isSignIn ? '/sign-in' : '/sign-up'} className='font-bold text-user-primary ml-1'>
+                  {!isSignIn ? "Sign in" : "Sign up"}
+                </Link>
+              </p>
+
         </div>
     </div>
   )
