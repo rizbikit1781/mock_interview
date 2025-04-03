@@ -38,4 +38,5 @@ Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/bui
 
 Tech Stack 
 - Firebase for authentication || Admin SDK - service action, Client SDK - website interaction
-- 
+- Gemini AI - npm install ai @ai-sdk/google
+- Vapi- npm install @vapi-ai/web
