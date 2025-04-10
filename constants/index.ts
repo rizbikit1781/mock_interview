@@ -1,4 +1,5 @@
 import { CreateAssistantDTO } from "@vapi-ai/web/dist/api";
+//TypeScript-first schema validation with static type inference
 import { z } from "zod";
 
 export const mappings = {
