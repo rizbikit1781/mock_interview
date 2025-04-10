@@ -1,7 +1,8 @@
 import InterviewCard from '@/components/InterviewCard'
 import { Button } from '@/components/ui/button'
 import { dummyInterviews } from '@/constants'
-import { getCurrentuUer, getInterviewByUserId } from '@/lib/actions/auth.action'
+import { getCurrentuUer } from '@/lib/actions/auth.action'
+import { getInterviewByUserId, getLatestInterviews } from '@/lib/actions/general.action'
 import Image from 'next/image'
 import Link from 'next/link'
 import React from 'react'
@@ -9,8 +10,15 @@ import React from 'react'
 const Home = async () => {
 
   const user = await getCurrentuUer();
-  const userInterviews = await getInterviewByUserId(user?.id);
-  const hasPastInterviews = userInterviews?.length > 0;
+
+  //parallel data fetching
+  const [ userInterviews, latestInterviews ] = await Promise.all([
+    await getInterviewByUserId(user?.id!),
+    await getLatestInterviews({ userId: user?.id! })
+  ]);
+
+  const hasPastInterviews = userInterviews?.length! > 0;
+  const hasUpcomingInterviews = latestInterviews?.length! > 0;
 
   return (
     <>
@@ -56,9 +64,16 @@ const Home = async () => {
         <h2>Take an interview</h2>
 
         <div className='interviews-section'>
-          {dummyInterviews.map((interview) => (
-            <InterviewCard {...interview} key={interview.id}/>
-          ))}
+          {
+            hasUpcomingInterviews ? (
+              latestInterviews?.map((interview) => (
+                <InterviewCard {...interview} key={interview.id}/>
+
+              ))
+            ) : (
+            <p>There are no new interview available.</p>
+          )
+         }
         </div>
         
       </section>
